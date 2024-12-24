@@ -72,3 +72,38 @@
         (not (get record-revoked record-info))
     )
 )
+
+(define-private (validate-timestamp (timestamp uint))
+    (and 
+        (>= timestamp MIN-TIMESTAMP)
+        (<= timestamp MAX-TIMESTAMP)
+    )
+)
+
+(define-private (validate-buff32 (input (buff 32)))
+    (is-eq (len input) u32)
+)
+
+(define-private (validate-buff33 (input (buff 33)))
+    (is-eq (len input) u33)
+)
+(define-public (register-vehicle 
+    (owner-public-key (buff 33)) 
+    (vehicle-hash (buff 32)))
+    (let
+        ((current-user tx-sender))
+        (asserts! (validate-buff33 owner-public-key) ERROR-INVALID-INPUT)
+        (asserts! (validate-buff32 vehicle-hash) ERROR-INVALID-INPUT)
+        (asserts! (is-none (map-get? registered-vehicles current-user)) ERROR-VEHICLE-EXISTS)
+        (ok (map-set registered-vehicles
+            current-user
+            {
+                vehicle-hash: vehicle-hash,
+                registration-timestamp: CURRENT-TIME,
+                vehicle-records: (list),
+                owner-public-key: owner-public-key,
+                vehicle-revoked: false
+            }
+        ))
+    )
+)
