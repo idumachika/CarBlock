@@ -158,3 +158,27 @@
         ))
     )
 )
+
+(define-public (approve-transfer
+    (request-identifier (buff 32))
+    (verification-proof (buff 32)))
+    (let
+        ((current-user tx-sender)
+         (transfer-request (unwrap! (map-get? transfer-requests request-identifier) ERROR-UNAUTHORIZED-ACCESS))
+         (vehicle-record (unwrap! (map-get? registered-vehicles current-user) ERROR-VEHICLE-NOT-FOUND)))
+        (asserts! (validate-buff32 request-identifier) ERROR-INVALID-INPUT)
+        (asserts! (validate-buff32 verification-proof) ERROR-INVALID-INPUT)
+        (asserts! (not (get vehicle-revoked vehicle-record)) ERROR-UNAUTHORIZED-ACCESS)
+        (asserts! (validate-verification-proof verification-proof (get vehicle-hash vehicle-record)) ERROR-INVALID-VERIFICATION-PROOF)
+        (ok (map-set transfer-requests
+            request-identifier
+            (merge transfer-request
+                {
+                    request-approved: true,
+                    verification-proof: verification-proof
+                }
+            )
+        ))
+    )
+)
+
