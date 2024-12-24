@@ -16,3 +16,16 @@
 (define-constant MIN-TIMESTAMP u1)
 (define-constant MAX-TIMESTAMP u9999999999)
 (define-constant CURRENT-TIME u1703980800) ;; 
+
+
+;; Data Maps
+(define-map registered-vehicles
+    principal
+    {
+        vehicle-hash: (buff 32),
+        registration-timestamp: uint,
+        vehicle-records: (list 10 (buff 32)),
+        owner-public-key: (buff 33),
+        vehicle-revoked: bool
+    }
+)
