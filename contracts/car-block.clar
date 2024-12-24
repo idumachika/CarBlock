@@ -107,3 +107,34 @@
         ))
     )
 )
+
+(define-public (add-vehicle-record 
+    (record-hash (buff 32))
+    (expiration-timestamp uint)
+    (record-category (string-utf8 64)))
+    (let
+        ((current-user tx-sender)
+         (vehicle-record (unwrap! (map-get? registered-vehicles current-user) ERROR-VEHICLE-NOT-FOUND)))
+        (asserts! (validate-buff32 record-hash) ERROR-INVALID-INPUT)
+        (asserts! (validate-timestamp expiration-timestamp) ERROR-INVALID-INPUT)
+        (asserts! (> expiration-timestamp CURRENT-TIME) ERROR-RECORD-EXPIRED)
+        (asserts! (not (get vehicle-revoked vehicle-record)) ERROR-UNAUTHORIZED-ACCESS)
+        (map-set record-details
+            record-hash
+            {
+                record-issuer: current-user,
+                issuance-timestamp: CURRENT-TIME,
+                expiration-timestamp: expiration-timestamp,
+                record-category: record-category,
+                record-revoked: false
+            }
+        )
+        (ok (map-set registered-vehicles
+            current-user
+            (merge vehicle-record
+                {vehicle-records: (unwrap! (as-max-len? (append (get vehicle-records vehicle-record) record-hash) u10)
+                    ERROR-UNAUTHORIZED-ACCESS)}
+            )
+        ))
+    )
+)
