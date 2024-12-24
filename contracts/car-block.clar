@@ -11,3 +11,8 @@
 (define-constant ERROR-INVALID-VERIFICATION-PROOF (err u103))
 (define-constant ERROR-RECORD-EXPIRED (err u104))
 (define-constant ERROR-INVALID-INPUT (err u105))
+
+;; Constants for validation
+(define-constant MIN-TIMESTAMP u1)
+(define-constant MAX-TIMESTAMP u9999999999)
+(define-constant CURRENT-TIME u1703980800) ;; 
