@@ -40,3 +40,35 @@
         record-revoked: bool
     }
 )
+
+(define-map transfer-requests
+    (buff 32)  ;; transfer request ID
+    {
+        requesting-entity: principal,
+        requested-attributes: (list 5 (string-utf8 64)),
+        request-approved: bool,
+        verification-proof: (buff 32)
+    }
+)
+
+;; Private functions
+(define-private (validate-verification-proof 
+    (submitted-proof (buff 32)) 
+    (stored-hash (buff 32)))
+    (is-eq submitted-proof stored-hash)
+)
+
+(define-private (check-record-status 
+    (record-hash (buff 32))
+    (record-info {
+        record-issuer: principal, 
+        issuance-timestamp: uint, 
+        expiration-timestamp: uint, 
+        record-category: (string-utf8 64), 
+        record-revoked: bool
+    }))
+    (and
+        (< CURRENT-TIME (get expiration-timestamp record-info))
+        (not (get record-revoked record-info))
+    )
+)
