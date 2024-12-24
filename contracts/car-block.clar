@@ -182,3 +182,37 @@
     )
 )
 
+(define-public (revoke-vehicle-record (record-hash (buff 32)))
+    (let
+        ((current-user tx-sender)
+         (record-info (unwrap! (map-get? record-details record-hash) ERROR-UNAUTHORIZED-ACCESS)))
+        (asserts! (validate-buff32 record-hash) ERROR-INVALID-INPUT)
+        (asserts! (is-eq (get record-issuer record-info) current-user) ERROR-UNAUTHORIZED-ACCESS)
+        (ok (map-set record-details
+            record-hash
+            (merge record-info {record-revoked: true})
+        ))
+    )
+)
+
+(define-public (update-vehicle-record 
+    (updated-vehicle-hash (buff 32)) 
+    (updated-public-key (buff 33)))
+    (let
+        ((current-user tx-sender)
+         (existing-record (unwrap! (map-get? registered-vehicles current-user) ERROR-VEHICLE-NOT-FOUND)))
+        (asserts! (validate-buff32 updated-vehicle-hash) ERROR-INVALID-INPUT)
+        (asserts! (validate-buff33 updated-public-key) ERROR-INVALID-INPUT)
+        (asserts! (not (get vehicle-revoked existing-record)) ERROR-UNAUTHORIZED-ACCESS)
+        (ok (map-set registered-vehicles
+            current-user
+            (merge existing-record
+                {
+                    vehicle-hash: updated-vehicle-hash,
+                    owner-public-key: updated-public-key
+                }
+            )
+        ))
+    )
+)
+
