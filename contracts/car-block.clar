@@ -1,8 +1,13 @@
 
 ;; title: car-block
-;; version:
-;; summary:
-;; description:
+;; version: 1.0.0
+;; summary: Decentralized Vehicle Registration and Ownership Management
+;; description: 
+;; CarBlock is a decentralized application for securely registering vehicles, transferring ownership, 
+;; and verifying vehicle details on the blockchain. It ensures transparency and eliminates the risk 
+;; of fraud in vehicle ownership by leveraging Clarity smart contracts. The system supports unique 
+;; vehicle identification, owner verification, and an event log for tracking ownership transfers.
+
 
 ;; Error codes
 (define-constant ERROR-UNAUTHORIZED-ACCESS (err u100))
