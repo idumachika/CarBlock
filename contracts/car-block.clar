@@ -29,3 +29,14 @@
         vehicle-revoked: bool
     }
 )
+
+(define-map record-details
+    (buff 32)  ;; record hash
+    {
+        record-issuer: principal,
+        issuance-timestamp: uint,
+        expiration-timestamp: uint,
+        record-category: (string-utf8 64),
+        record-revoked: bool
+    }
+)
