@@ -138,3 +138,23 @@
         ))
     )
 )
+
+
+(define-public (initiate-transfer-request
+    (request-identifier (buff 32))
+    (required-attributes (list 5 (string-utf8 64))))
+    (let
+        ((requesting-user tx-sender))
+        (asserts! (validate-buff32 request-identifier) ERROR-INVALID-INPUT)
+        (asserts! (is-none (map-get? transfer-requests request-identifier)) ERROR-INVALID-INPUT)
+        (ok (map-set transfer-requests
+            request-identifier
+            {
+                requesting-entity: requesting-user,
+                requested-attributes: required-attributes,
+                request-approved: false,
+                verification-proof: 0x00
+            }
+        ))
+    )
+)
