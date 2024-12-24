@@ -216,3 +216,31 @@
     )
 )
 
+;; Read-only functions
+(define-read-only (get-vehicle-details (owner-principal principal))
+    (map-get? registered-vehicles owner-principal)
+)
+
+(define-read-only (get-record-details (record-hash (buff 32)))
+    (map-get? record-details record-hash)
+)
+
+(define-read-only (verify-transfer-request
+    (request-identifier (buff 32))
+    (submitted-proof (buff 32)))
+    (match (map-get? transfer-requests request-identifier)
+        request-info (and
+            (get request-approved request-info)
+            (validate-verification-proof submitted-proof (get verification-proof request-info))
+        )
+        false
+    )
+)
+
+(define-read-only (check-record-validity (record-hash (buff 32)))
+    (match (map-get? record-details record-hash)
+        record-info (check-record-status record-hash record-info)
+        false
+    )
+)
+
